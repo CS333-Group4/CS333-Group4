@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>NBA Visualization</title>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
+        rel="stylesheet"
+    />
+
+    <style>
+        body,
+        button,
+        select,
+        text {
+            font-family: "Lato", sans-serif;
+        }
+
+        select {
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .current-time-container,
+        .slider,
+        .button-container,
+        .annotations-container,
+        .player-selection {
+            display: flex;
+            justify-content: center;
+        }
+
+        #continue-button, #start-button {
+            margin-bottom: 2vh;
+        }
+
+        .stat-selector-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .stat-selector-label {
+            margin-right: 1vw;
+        }
+
+        #stat-selector {
+            height: 30px;
+        }
+
+        .player-cards {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .player-selection-img {
+            height: 300px;
+        }
+
+        .player-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 14vw;
+            border-right: 1px solid gray;
+        }
+
+        .player-info {
+            text-align: center;
+        }
+
+        .null-container {
+            width: 9vw;
+        }
+
+        .player-name,
+        .player-selector {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        #line-chart {
+            width: 800px;
+            height: 500px;
+            margin-left: 280px;
+            
+        }
+
+        #st-continue-button {
+            width: 80px;
+            height: 40px;
+            margin-left: 720px;
+            margin-bottom: 2vh;
+        }
+
+        #st-annotation {
+            position: absolute;
+            top: 580px;
+            left: 450px;
+            width: 250px;
+            font-size: 12px;
+        }
+
+        .histogram-and-pie {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-top: 5vh;
+            margin-left: 5vw;
+            margin-right: 5vw;
+        }
+
+        #histogram-title {
+            text-align: center;
+        }
+
+        .histogram-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .histogram-logos {
+            margin-top: 5vh;
+        }
+
+
+        .champ-and-runner-up {
+            height: 150px;
+        }
+
+        /* .player-selection {
+            margin-left: auto;
+            width: 1250px;
+        } */
+    </style>
+</head>
+
+<body style="background-color: #F5EBE0;">
+    
+    <h1 style="margin-bottom:1vh; text-align:center;"> Stephen Curry </h1>
+    <h3 style="margin-top:1vh; margin-bottom: 2vh; text-align:center;"> And the History of the 3-Pointer in the NBA </h3>
+
+    <p style="margin-right: 20vw; margin-left: 20vw; margin-bottom:5vh; text-align:center;"> The 3-Pointer has quickly become the most important aspect of
+    scoring in the modern NBA, and at Stephen Curry is a huge part of why. Curry has completely revolutionized
+    the game with his accuracy and volume from behind the arc, and his impact on the NBA is visible through a
+    multitude of different metrics, highlighted in the visualizations below. </p>
+
+    <div class="line-chart-container">
+        <h2 style="text-align:center; margin-bottom: 5vh;"> The Evolution of Player's Three Point Shooting </h2>
+        <div id="line-chart">
+            <div id="st-annotation">
+                Since the three point line was introduced in the NBA in 1980, players
+                have gotten more and more skilled at hitting threes each year.
+            </div>
+        </div>
+    </div>
+    
+
+    <button id="st-continue-button">Next</button>
+    
+    <div style="background-color: #F0DBDB;">
+    <hr>
+    <h2 style="margin-top:1vh; margin-bottom: 2vh; text-align:center;"> League-Wide Impacts </h3>
+
+    <p style="margin-top: 2vh; margin-left:20vw; margin-right: 20vw; text-align:center;"> This increase in 3 pointers is not limited to only a few special players. 
+        All teams have gradually adapted their game in the last few years, with 3 
+        pointers becoming increasingly more important to succeeding in the modern NBA. </p>
+    
+    <div class="histogram-and-pie">
+        <div class="histogram-container">
+            <div class="histogram-and-title">
+                <h3 id="histogram-title">3-Pointers Made by Each NBA Team</h2>
+                <svg id="histogram"></svg>
+            </div>
+            <div class="histogram-logos">
+                <div class="champ-and-runner-up">
+                    <div>Champions</div>
+                    <img id="histogram-champions" src="" />
+                    <div>Runner-Up</div>
+                    <img id="histogram-runnerup" src="" />
+                </div>
+                <div>
+                    <svg id="h-legend" style="margin-top: 10vh;"></svg>
+                </div>
+                
+            </div>
+        </div>
+        <div class="'pie-container">
+            <h3 id="pie-title">Total Point Breakdown</h2>
+            <div style="display: flex">
+                <svg id="pie"></svg>
+                <svg id="legend"></svg>
+                <!-- <svg id="bar"></svg> -->
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <div class="slider-outer-container">
+        <div class="slider-inner-container">
+            <div class="current-time-container">
+                <h2 id="current-time"></h2>
+            </div>
+            <div class="slider">
+                <div id="slider-time"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="annotations-container">
+        <p class="current-annotation" style="text-align:center;">
+            In 1996, only 4 teams made more than 10 three pointers per game, and
+            three pointers were only about 20% of total scoring league-wide.
+        </p>
+    </div>
+
+    <div class="button-container">
+        <button id="start-button"> Start Animation </button>
+        <button id="continue-button" disabled style="display: none;">Continue Animation</button>
+    </div>
+    <hr>
+</div>
+
+    <h2 style="text-align: center">Steph vs The Best</h2>
+
+    <p style="margin: 2vh 20vw; text-align:center;"> 
+        Lastly, we can compare Steph's individual numbers directly to some of the
+        all time great shooters. No matter what category we choose to analyze, it's clear that Curry
+        is truly in a league of his own.
+     </p>
+
+    <div class="stat-selector-container">
+        <p class="stat-selector-label">Current Statistic:</p>
+        <select id="stat-selector" class="dropdown"></select>
+    </div>
+
+    <div class="player-selection">
+        <div class="player-cards">
+            <div class="null-container player-null">
+                <div class="null-image-container">
+                    <img
+                        class="player-selection-img"
+                        src="player-images/empty.png"
+                    />
+                </div>
+                <div class="player-name-container">
+                    <p class="player-name">&nbsp;</p>
+                </div>
+                <div class="null-info">
+                    <p class="years-played">
+                        <strong> Seasons Played </strong>
+                    </p>
+                    <p class="player-stat"><strong> Career Average </strong></p>
+                    <p class="league-average-stat">
+                        <strong> League Average </strong>
+                    </p>
+                    <p class="adjusted-stat">
+                        <strong> Relative to Average </strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="player-container player-0"></div>
+
+            <div class="player-container player-1">
+                <div class="player-image-container"></div>
+                <div class="player-name-container">
+                    <select
+                        id="player-selector-1"
+                        class="player-selector dropdown"
+                    ></select>
+                </div>
+                <div class="player-stats-container"></div>
+            </div>
+
+            <div class="player-container player-2">
+                <div class="player-image-container"></div>
+                <div class="player-name-container">
+                    <select
+                        id="player-selector-2"
+                        class="player-selector dropdown"
+                    ></select>
+                </div>
+                <div class="player-stats-container"></div>
+            </div>
+
+            <div class="player-container player-3">
+                <div class="player-image-container"></div>
+                <div class="player-name-container">
+                    <select
+                        id="player-selector-3"
+                        class="player-selector dropdown"
+                    ></select>
+                </div>
+                <div class="player-stats-container"></div>
+            </div>
+
+            <div class="player-container player-4">
+                <div class="player-image-container"></div>
+                <div class="player-name-container">
+                    <select
+                        id="player-selector-4"
+                        class="player-selector dropdown"
+                    ></select>
+                </div>
+                <div class="player-stats-container"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    let globalTime;
+    let stData;
+
+    // Time Slider (starter code from: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518).
+    var dataTime = d3.range(0, 24).map(function (d) {
+        return 1996 + d;
+    });
+
+    //Line chart
+
+    var svgSt = d3
+        .select("#line-chart")
+        .append("svg")
+        .attr("width", 800)
+        .attr("height", 450)
+        .append("g")
+        .attr("transform", "translate(110,10)");
+    var xSt = d3.scaleLinear().domain([1980, 2022]).range([0, 700]);
+    svgSt
+        .append("g")
+        .attr("transform", "translate(0,400)")
+        .call(d3.axisBottom(xSt).ticks(10).tickFormat(d3.format("d")));
+
+    var ySt = d3.scaleLinear().domain([0, 5]).range([400, 0]);
+    svgSt.append("g").call(d3.axisLeft(ySt));
+
+    svgSt
+        .append("text")
+        .attr("x", -100)
+        .attr("y", 200)
+        .attr("font-size", "16px")
+        .attr("transform", "translate(-240, 150)rotate(-90)")
+        .html("3PM Per Game");
+
+    var colorSt = d3
+        .scaleOrdinal()
+        .domain(["average", "bird", "richmond", "allen", "curry"])
+        .range(["gray", "green", "purple", "red", "#AE8625"]);
+
+    const transitionPath = d3.transition().duration(2500);
+
+    function drawLine(player, width) {
+        path = svgSt
+            .append("path")
+            .datum(stData[player])
+            .attr("fill", "none")
+            .attr("stroke", colorSt(player))
+            .attr("stroke-width", width)
+            .attr(
+                "d",
+                d3
+                    .line()
+                    .x(function (d) {
+                        return xSt(d.season);
+                    })
+                    .y(function (d) {
+                        return ySt(d.value);
+                    })
+            );
+
+        pathLength = path.node().getTotalLength();
+
+        path.attr("stroke-dashoffset", pathLength)
+            .attr("stroke-dasharray", pathLength)
+            .transition()
+            .duration(2000)
+            .attr("stroke-dashoffset", 0);
+    }
+
+    d3.json("threeAverages.json").then(function (data) {
+        stData = data;
+        stCount = 0;
+
+        drawLine("average", 1.5);
+
+        d3.select("#st-continue-button").on("click", (event, d) => {
+            if (stCount == 0) {
+                drawLine("bird", 2.5);
+                d3.select("#st-annotation")
+                    .html(
+                        "Larry Bird was the first to start masterizing three pointers in the NBA in the 80s. The Celtics legend's shooting skills helped him become the NBA MVP of the 1983-1984 season."
+                    )
+                    .transition()
+                    .duration(2000)
+                    .style("top", "510px")
+                    .style("left", "470px");
+            } else if (stCount == 1) {
+                drawLine("richmond", 2.5);
+                d3.select("#st-annotation")
+                    .html(
+                        "Mitch Richmond was one of the best 3pt shooters of the 90s. He was a six-time NBA All-Star player and his legendary number 2 jersey was retired by the Sacramento Kings."
+                    )
+                    .transition()
+                    .duration(2000)
+                    .style("top", "400px")
+                    .style("left", "580px");
+            } else if (stCount == 2) {
+                drawLine("allen", 2.5);
+                d3.select("#st-annotation")
+                    .html(
+                        "Considered one of the greatest shooters of all-time, Ray Allen held the record for most three-pointers made until 2021."
+                    )
+                    .transition()
+                    .duration(2000)
+                    .style("top", "350px")
+                    .style("left", "700px");
+            } else {
+                drawLine("curry", 5);
+                d3.select("#st-continue-button").attr("disabled", true);
+                d3.select("#st-annotation")
+                    .html(
+                        "However, the man that makes even the best look like average players is Stephen Curry. <br><br> With the most three-pointers made of all time, Curry is widely considered the greatest three point shooter of all-time."
+                    )
+                    .transition()
+                    .duration(2000)
+                    .style("top", "280px")
+                    .style("left", "710px");
+            }
+            stCount++;
+        });
+    });
+
+    //
+
+    var sliderTime = d3
+        .sliderBottom()
+        .min(d3.min(dataTime))
+        .max(d3.max(dataTime))
+        .step(1)
+        .width(950)
+        .tickFormat(d3.format("d"))
+        .tickValues(dataTime)
+        .default(1996)
+        .fill("#2196f3")
+        .on("onchange", (val) => {
+            globalTime = val;
+            drawPie();
+            // drawBar();
+            drawHistogram();
+            d3.select("#current-time").text(val);
+        });
+
+    var gTime = d3
+        .select("div#slider-time")
+        .append("svg")
+        .attr("width", 1000)
+        .attr("height", 100)
+        .attr("display", "flex")
+        .attr("justify-content", "center")
+        .append("g")
+        .attr("transform", "translate(30,30)");
+
+    gTime.call(sliderTime);
+
+    // Create an animation for the slider.
+
+    d3.select("#start-button").on("click", (event, d) => {
+        d3.select("#start-button").style("display", "none");
+        d3.select("#continue-button").style("display", "block");
+        var firstSliderAnimation = setInterval(() => {
+            let currentTime = sliderTime.value();
+
+            if (currentTime == 2009) {
+                d3.select("#continue-button").attr("disabled", null);
+                clearInterval(firstSliderAnimation);
+                d3.select(".current-annotation").html(
+                    "In 2009, Steph Curry entered the league and changed everything."
+                );
+            } else {
+                sliderTime.value(currentTime + 1);
+                gTime.transition().duration(200).call(sliderTime);
+            }
+        }, 500);
+        });
+
+    d3.select("p#current-time").text(sliderTime.value());
+    d3.select("#continue-button").on("click", (event, d) => {
+        d3.select("#continue-button").attr("disabled", true);
+        var thirdSliderAnimation = setInterval(() => {
+            let currentTime = sliderTime.value();
+
+            if (currentTime == 2013) {
+                d3.select("#continue-button").attr("disabled", null);
+                clearInterval(thirdSliderAnimation);
+                d3.select(".current-annotation").html(
+                    `<p> In 2014-15, Stephen Curry wins his first NBA championship, \n shooting 38.5% on 11 3PA/game. <p>
+                    <p> Notice that half of NBA teams are still below the 10 3PM per game mark, and threes are only 25% of total scoring.`
+                );
+            }
+
+            if (currentTime == d3.max(dataTime)) {
+                clearInterval(thirdSliderAnimation);
+                d3.select(".current-annotation").html(
+                    `<p> In just 5 years, not a single team is making less than 12 threes per game, and threes are now nearly 1/3 of all scoring. </p>
+                    <p> No matter if they make the playoffs or not, all teams have gotten the message. </p>`
+                );
+            } else {
+                sliderTime.value(currentTime + 1);
+                gTime.transition().duration(200).call(sliderTime);
+            }
+        }, 500);
+    });
+
+    // Player Selection Visualization
+    const result = d3
+        .csv("player-selection.csv")
+        .then((data) => processStats(data));
+
+    let globalPlayerData = {};
+    let selectedPlayers = {};
+    let availablePlayers;
+
+    processStats = (data) => {
+        // Create a global player data dictionary indexed by player name.
+        data.forEach((player) => {
+            const key = player["Name"];
+            const stats = { ...player };
+            delete stats["Name"];
+            globalPlayerData[key] = stats;
+        });
+
+        // Render the initial 5 players (Steph and 4 others).
+        for (let i = 0; i < 5; i++) {
+            renderPlayerCard(i, data[i]);
+        }
+
+        // Create a list of available players to select from for dropdowns.
+        availablePlayers = data.slice(1, data.length).map((player) => {
+            return player["Name"];
+        });
+
+        initializeDropdowns();
+    };
+
+    renderPlayerCard = (playerIndex, playerData) => {
+        const playerCardSelector = ".player-" + playerIndex.toString();
+        const leagueKey = "League " + statVar;
+
+        let playerStat = playerData[statVar];
+        let leagueStat = playerData[leagueKey];
+        const adjusted =
+            Math.round(100 * (playerData[statVar] / playerData[leagueKey])) /
+            100;
+
+        const stephStat = globalPlayerData["Stephen Curry"][statVar];
+        const stephLeague = globalPlayerData["Stephen Curry"][leagueKey];
+        const stephAdjusted = Math.round(100 * (stephStat / stephLeague)) / 100;
+
+        const statBool = playerStat >= stephStat;
+        const adjustedBool = adjusted >= stephAdjusted;
+
+        if (statVar == "3P%") {
+            playerStat = (Math.round(1000 * playerStat) / 10).toString() + "%";
+            leagueStat = (Math.round(1000 * leagueStat) / 10).toString() + "%";
+        }
+
+        if (playerIndex == 0) {
+            d3.select(playerCardSelector).html(
+                `
+        <div class="player-image-container">
+            <img class="player-selection-img" src="player-images/steph.png">
+        </div>
+        <div class="player-name-container">
+            <p class="player-name"> Stephen Curry </p>
+        </div>
+        <div class="${
+            "player-" + playerIndex.toString() + "-info"
+        } player-info">
+            <p class="years-played"> ${
+                playerData["Start Year"] + "-" + playerData["End Year"]
+            } </p>
+            <p class="player-stat"> ${playerStat} </p>
+            <p class="league-average-stat"> ${leagueStat} </p>
+            <p class="adjusted-stat"> ${adjusted}x </p>
+        </div>
+        `
+            );
+        } else {
+            const imageURL = "player-images/" + playerData["Image URL"];
+            d3.select(playerCardSelector + " .player-image-container").html(
+                `
+        <img class="player-selection-img" src=${imageURL}>
+        `
+            );
+            d3.select(playerCardSelector + " .player-stats-container").html(
+                `
+        <div class="${
+            "player-" + playerIndex.toString() + "-info"
+        } player-info">
+            <p class="years-played"> ${
+                playerData["Start Year"] + "-" + playerData["End Year"]
+            } </p>
+            <p class="player-stat" style=${
+                statBool ? "color:green" : "color:red"
+            }> ${playerStat} </p>
+            <p class="league-average-stat"> ${leagueStat} </p>
+            <p class="adjusted-stat" style=${
+                adjustedBool ? "color:green" : "color:red"
+            }> ${adjusted}x</p>
+        </div>
+        `
+            );
+        }
+    };
+
+    renderAllCards = () => {
+        for (let i = 0; i < 5; i++) {
+            if (i == 0) {
+                renderPlayerCard(0, globalPlayerData["Stephen Curry"]);
+            } else {
+                const dropdownId = "#player-selector-" + i.toString();
+                const currentPlayer = d3.select(dropdownId).property("value");
+                renderPlayerCard(i, globalPlayerData[currentPlayer]);
+            }
+        }
+    };
+
+    let statVar;
+    let statOptions = ["3P", "3PA", "3P%"];
+    initializeDropdowns = () => {
+        d3.select("#stat-selector")
+            .selectAll("myOptions")
+            .data(statOptions)
+            .enter()
+            .append("option")
+            .text(function (d) {
+                return d;
+            }) // text showed in the menu
+            .attr("value", function (d) {
+                return d;
+            }); // corresponding value returned by the button
+
+        for (let i = 1; i < 5; i++) {
+            // Create dropdown with players as options.
+            const dropdownId = "#player-selector-" + i.toString();
+            d3.select(dropdownId)
+                .selectAll("myOptions")
+                .data(availablePlayers)
+                .enter()
+                .append("option")
+                .text(function (d) {
+                    return d;
+                }) // text showed in the menu
+                .attr("value", function (d) {
+                    return d;
+                }); // corresponding value returned by the buttons
+
+            // Fill initial player values.
+            d3.select(dropdownId).property(
+                "value",
+                Object.keys(globalPlayerData)[i]
+            );
+
+            // Add event listeners for changes.
+            d3.select(dropdownId).on("change", function (event, d) {
+                // recover the option that has been chosen
+                const selectedPlayer = d3.select(this).property("value");
+                const selectorIndex = this.id.slice(-1);
+                renderPlayerCard(
+                    selectorIndex,
+                    globalPlayerData[selectedPlayer]
+                );
+            });
+        }
+    };
+    statVar = "3P";
+
+    d3.select("#stat-selector").on("change", function (event, d) {
+        // recover the option that has been chosen
+        const selectedOption = d3.select(this).property("value");
+        statVar = selectedOption;
+        renderAllCards();
+    });
+
+    // 3pt Over Time Visualization
+    var width = 450;
+    var height = 450;
+
+    pieSvg = d3
+        .select("#pie")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + 220 + "," + 200 + ")");
+
+    legendSvg = d3
+        .select("#legend")
+        .attr("width", 200)
+        .attr("height", 100)
+        .append("g")
+        .attr("transform", "translate(" + -180 + "," + 5 + ")");
+
+    // barSvg = d3.select("#bar")
+    //     .attr("width", width)
+    //     .attr("height", height)
+    //     .append("g")
+    //     .attr("transform", "translate(" + 40 + "," + -40 + ")");
+
+    var threePointBreakdown, yearIndex;
+    // d3.csv("3pt-ot.csv").then((data) => {
+    //     threePointBreakdown = data;
+    //     drawBar();
+    // })
+
+    var pieData;
+    d3.csv("pie.csv").then((data) => {
+        legendSvg
+            .append("circle")
+            .attr("cx", 200)
+            .attr("cy", 30)
+            .attr("r", 6)
+            .style("fill", "red");
+        legendSvg
+            .append("circle")
+            .attr("cx", 200) 
+            .attr("cy", 60)
+            .attr("r", 6)
+            .style("fill", "blue");
+        legendSvg
+            .append("text")
+            .attr("x", 220)
+            .attr("y", 30)
+            .text("3P")
+            .style("font-size", "15px")
+            .attr("alignment-baseline", "middle");
+        legendSvg
+            .append("text")
+            .attr("x", 220)
+            .attr("y", 60)
+            .text("2P")
+            .style("font-size", "15px")
+            .attr("alignment-baseline", "middle");
+
+        pieData = data;
+
+        drawPie(data);
+    });
+
+    // function drawBar() {
+    //     console.log("Drawing Bar")
+    //     t = d3.transition().duration(200);
+
+    //     currentData = threePointBreakdown.filter((d) => {
+    //         return (
+    //             d.year.includes(String(globalTime))
+    //         );
+    //     })
+    //     var barX = ["3PM", "3PA"]
+    //     var barY = [currentData[0]["3PM"], currentData[0]["3PA"]]
+    //     console.log(barY);
+    //     // draw bar
+    //     var x = d3.scaleLinear()
+    //         .domain([0, 35])
+    //         .range([0, width - 150]);
+    //     var y = d3.scaleBand()
+    //         .domain(barX)
+    //         .range([0, height])
+    //         .paddingInner(.1);
+
+    //     barSvg.selectAll(".bar-axis").remove();
+
+    //     barSvg.append("g")
+    //         .attr("transform", `translate(0, ${height})`)
+    //         .attr("class", "bar-axis")
+    //         .call(d3.axisBottom(x))
+    //         .selectAll("text")
+    //         .attr("transform", "translate(-10,0)rotate(-45)")
+    //         .style("text-anchor", "end");
+
+    //     barSvg.append("g")
+    //         .attr("class", "bar-axis")
+    //         .call(d3.axisLeft(y))
+
+    //     barSvg.selectAll("rect.bar")
+    //         .data(currentData)
+    //         .join(
+    //             (enter) =>
+    //                 enter
+    //                     .append("rect")
+    //                     .attr("class", "bar")
+    //                     .attr("y", (d) => y(["3PM", "3PA"]))
+    //                     .attr("height", y.bandwidth())
+    //                     .attr("x", x(0))
+    //                     .attr("fill", (d) => "red")
+    //                     .transition(t)
+    //                     .attr("x", (d) => x(d))
+    //                     .attr("width", (d) => width - x(d))
+    //                     .attr("transform", "translate(" + 20 + " ," + -20 + ")"),
+
+    //             (update) =>
+    //                 update
+    //                     .attr("fill", (d) => "red")
+
+    //                     .transition(t)
+    //                     .attr("y", (d) => y(["3PM", "3PA"]))
+    //                     .attr("height", y.bandwidth())
+    //                     .attr("x", (d) => x(d))
+    //                     .attr("width", (d) => width - y(["3PM", "3PA"]))
+
+    //         )
+    // }
+
+    function drawPie() {
+        let currentPieData = pieData.filter((d) => {
+            if (globalTime) {
+                return d.year.includes(String(globalTime));
+            } else {
+                return d.year.includes("1996");
+            }
+        });
+
+        t = d3.transition().duration(200);
+        // draw pie
+        // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+        const radius = Math.min(width, height) / 2 - 40;
+        // Create dummy data
+        const data = {
+            "3P": currentPieData[0]["3P"],
+            "2P": currentPieData[0]["2P"],
+        };
+
+        // set the color scale
+        const color = d3.scaleOrdinal().range(["red", "blue"]);
+
+        // Compute the position of each group on the pie:
+        const pie = d3.pie().value(function (d) {
+            return d[1];
+        });
+        const data_ready = pie(Object.entries(data));
+        // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+        pieSvg
+            .selectAll("whatever")
+            .data(data_ready)
+            .join(
+                (enter) =>
+                    enter
+                        .append("path")
+                        .attr("d", d3.arc().innerRadius(0).outerRadius(radius)),
+
+                (update) =>
+                    update
+                        .append("path")
+                        .attr("d", d3.arc().innerRadius(0).outerRadius(radius))
+            )
+            .attr("fill", function (d) {
+                return color(d.data[1]);
+            })
+            .attr("stroke", "black")
+            .style("stroke-width", "2px")
+            .style("stroke-opacity", 0)
+            .style("opacity", 0.5);
+    }
+
+    //   Histogram
+    var width = 500;
+    var height = 400;
+    svg = d3
+        .select("#histogram")
+        .attr("width", width + 50)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + 20 + "," + -20 + ")");
+
+
+    hLegendSvg = d3
+        .select("#h-legend")
+        .attr("width", 200)
+        .attr("height", 100)
+        .append("g")
+        .attr("transform", "translate(" + -180 + "," + 0 + ")");
+
+    var threePointerStats, champions, playoff_teams;
+
+    async function loadData() {
+        threePointerStats = await d3.csv("Book2.csv");
+        await d3.csv("NBA-champions.csv").then((data2) => {
+            hLegendSvg
+            .append("circle")
+            .attr("cx", 200)
+            .attr("cy", 30)
+            .attr("r", 6)
+            .style("fill", "red");
+        hLegendSvg
+            .append("circle")
+            .attr("cx", 200) 
+            .attr("cy", 90)
+            .attr("r", 6)
+            .style("fill", "blue");
+            hLegendSvg
+            .append("circle")
+            .attr("cx", 200) 
+            .attr("cy", 60)
+            .attr("r", 6)
+            .style("fill", "orange");
+        hLegendSvg
+            .append("text")
+            .attr("x", 220)
+            .attr("y", 30)
+            .text("Champions")
+            .style("font-size", "15px")
+            .attr("alignment-baseline", "middle");
+        hLegendSvg
+            .append("text")
+            .attr("x", 220)
+            .attr("y", 60)
+            .text("Runner-ups")
+            .style("font-size", "15px")
+            .attr("alignment-baseline", "middle");
+        hLegendSvg
+            .append("text")
+            .attr("x", 220)
+            .attr("y", 90)
+            .text("Playoff Teams")
+            .style("font-size", "15px")
+            .attr("alignment-baseline", "middle");
+
+            champions = data2;
+            data2.forEach((d) => {
+                const key = d["Year"];
+                const stats = { ...d };
+                // delete stats["Year"];
+                champions[key] = stats;
+            });
+        });
+
+        playoff_teams = await d3.csv("nba_playoffs.csv");
+
+        drawHistogram();
+    }
+    loadData();
+
+    function drawHistogram() {
+        // data based on globalTime
+        curData = threePointerStats.filter((d) => {
+            // Pelicans and Hornets sometimes have empty values
+            return (
+                d.Year.includes(String(globalTime)) &&
+                d["3PM"].trim().length !== 0
+            );
+        });
+        curData.sort((x, y) => {
+            return y["3PM"] - x["3PM"];
+        });
+        x = curData.map((d) => d["Team"]);
+        y = curData.map((d) => d["3PM"]);
+
+        var cur_playoff_teams = new Set();
+        curPlayoffs = playoff_teams.forEach((d) => {
+            if (d.Yr === String(globalTime + 1)) {
+                var win = d.Winner.replace(/\([^()]*\)/g, "").trim();
+                var lose = d.Loser.replace(/\([^()]*\)/g, "").trim();
+                cur_playoff_teams.add(win);
+                cur_playoff_teams.add(lose);
+            }
+        });
+
+        // Scaling functions
+        var x3 = d3.scaleBand().domain(x).range([0, width]).paddingInner(0.1);
+        var y3 = d3
+            .scaleLinear()
+            .domain([0, 20])
+            .range([height - 50, 0]);
+
+        svg.selectAll(".axis").remove();
+
+        // // X-axis states
+        // svg
+        //   .append("g")
+        //   .attr("class", "x axis")
+        //   .attr("transform", "translate(0," + height + ")")
+        //   .call(d3.axisBottom(x3).ticks(10))
+        //   .selectAll("text")
+        //   .style("text-anchor", "end")
+        //   .attr("dx", "-.8em")
+        //   .attr("dy", ".15em")
+        //   .attr("transform", "rotate(-55)");
+
+        // X-axis: Teams
+        svg.append("text")
+            .attr("class", "x axis label")
+            .attr("transform", "translate(" + width / 2 + " ," + height + ")")
+            .style("text-anchor", "middle")
+            .text("Teams");
+
+        // Y-axis: 3PM
+        svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + 20 + " ," + 30 + ")")
+            .call(d3.axisLeft(y3));
+
+        svg.append("text")
+            .attr("class", "y axis label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - 20)
+            .attr("x", 0 - height / 2)
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("3 Pointers Made");
+
+        t = d3.transition().duration(200);
+
+        // Visualize bars
+        svg.selectAll("rect.bar")
+            .data(curData)
+            .join(
+                //ENTER (elements to be created)
+                (enter) =>
+                    enter
+                        .append("rect")
+                        .attr("class", "bar")
+                        .attr("x", (d) => {
+                            return x3(d["Team"]);
+                        })
+                        .attr("width", x3.bandwidth())
+                        .attr("y", y3(0))
+                        .attr("fill", (d) => {
+                            if (
+                                d["Team"] ===
+                                champions[globalTime + 1]["Champion"]
+                            ) {
+                                d3.select("#histogram-champions")
+                                    .attr("src", `nba-team-logos/${d.Team}.png`)
+                                    .attr("height", "auto")
+                                    .attr("width", 50);
+                                return "red";
+                            } else if (
+                                d["Team"] ===
+                                champions[globalTime + 1]["Runner-Up"]
+                            ) {
+                                d3.select("#histogram-runnerup")
+                                    .attr("src", `nba-team-logos/${d.Team}.png`)
+                                    .attr("height", "auto")
+                                    .attr("width", 50);
+                                return "orange";
+                            } else if (cur_playoff_teams.has(d["Team"]))
+                                return "blue";
+                            else return "grey";
+                        })
+                        .transition(t)
+                        .attr("y", (d) => y3(d["3PM"]))
+                        .attr("height", (d) => height - y3(d["3PM"]))
+                        .attr(
+                            "transform",
+                            "translate(" + 20 + " ," + -20 + ")"
+                        ),
+                // UPDATE (elements to be updated)
+                (update) =>
+                    update
+                        .attr("fill", (d) => {
+                            if (
+                                d["Team"] ===
+                                champions[globalTime + 1]["Champion"]
+                            ) {
+                                d3.select("#histogram-champions")
+                                    .attr("src", `nba-team-logos/${d.Team}.png`)
+                                    .attr("height", "auto")
+                                    .attr("width", 50);
+                                return "red";
+                            } else if (
+                                d["Team"] ===
+                                champions[globalTime + 1]["Runner-Up"]
+                            ) {
+                                d3.select("#histogram-runnerup")
+                                    .attr("src", `nba-team-logos/${d.Team}.png`)
+                                    .attr("height", "auto")
+                                    .attr("width", 50);
+                                return "orange";
+                            } else if (cur_playoff_teams.has(d["Team"]))
+                                return "blue";
+                            else return "grey";
+                        })
+                        .transition(t)
+                        .attr("x", (d) => x3(d["Team"]))
+                        .attr("width", x3.bandwidth())
+                        .attr("y", (d) => y3(d["3PM"]))
+                        .attr("height", (d) => height - y3(d["3PM"]))
+            );
+    }
+</script>
